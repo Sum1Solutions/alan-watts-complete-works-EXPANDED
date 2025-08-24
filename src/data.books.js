@@ -1,0 +1,23 @@
+export const BOOKS = [
+  { year: "1936", title: "The Spirit of Zen", link: "https://archive.org/details/in.ernet.dli.2015.283774", notes: "Early popularization influenced by D.T. Suzuki; shows Watts’s initial thesis that spirituality suffuses daily life—work, art, ordinary tasks. Later critiqued by Watts as unscholarly, but foundational." },
+  { year: "1937", title: "The Legacy of Asia and Western Man", link: "https://archive.org/details/in.ernet.dli.2015.173434", notes: "Comparative analysis arguing Western technics require Eastern insight for balance—seed of his East–West synthesis." },
+  { year: "1940", title: "The Meaning of Happiness", link: "https://archive.org/details/meaningofhappine00harp", notes: "Happiness via accepting impermanence; the security-vs-presence theme that undergirds later talks." },
+  { year: "1947", title: "Behold the Spirit", link: "https://archive.org/details/beholdspiritstud00watt", notes: "Mystical Christianity through direct experience; aligns sacrament with Zen immediacy—reconciling upbringing with nonduality." },
+  { year: "1950", title: "Easter: Its Story and Meaning", link: "https://openlibrary.org/books/OL23267662M/Easter", notes: "Myth/ritual lens: rites as enactments of cosmic patterns rather than doctrinal claims." },
+  { year: "1950", title: "The Supreme Identity", link: "https://archive.org/details/supremeidentitye0000watt", notes: "Advaita Vedanta in Western language; atman–brahman identity versus ego-self. Prefigures 'The Book'." },
+  { year: "1951", title: "The Wisdom of Insecurity", link: "https://archive.org/details/wisdomofinsecuri00alan", notes: "Core thesis: reality is process; control-seeking breeds anxiety. Practical ethic of presence." },
+  { year: "1953", title: "Myth and Ritual in Christianity", link: "https://archive.org/details/mythritualinchri0000watt", notes: "Symbolic reading of Christian forms mapping to perennial patterns; traditions differ in expression more than mystical core." },
+  { year: "1957", title: "The Way of Zen", link: "https://archive.org/details/wayofzen00watt", notes: "Historical + practical overview framing Zen as a Chan/Taoist synthesis and pedagogy of spontaneity." },
+  { year: "1958", title: "Nature, Man and Woman", link: "https://archive.org/details/in.ernet.dli.2015.505826", notes: "Erotic polarity (yin/yang), ecology, and unity-of-opposites; pushes beyond puritan dualisms." },
+  { year: "1960", title: "This Is It and Other Essays", link: "https://archive.org/details/thisisitotheress00watt", notes: "Short essays on 'suchness'—direct immediacy of reality. Paradox into practice." },
+  { year: "1961", title: "Psychotherapy East and West", link: "https://terebess.hu/english/psychotherapy.html", notes: "Western ego-integration vs Eastern ego-transcendence; bridges clinical and contemplative aims." },
+  { year: "1962", title: "The Joyous Cosmology", link: "https://archive.org/details/joyouscosmologya00watt", notes: "Phenomenology of psychedelic states; discloses nondual perception while warning against reification." },
+  { year: "1964", title: "Beyond Theology", link: "https://archive.org/details/beyondtheologyar00watt", notes: "Critique of 'Godmanship'; urges play over metaphysical literalism. 'Cosmic drama' framing." },
+  { year: "1966", title: "The Book: On the Taboo Against Knowing Who You Are", link: "https://www.organism.earth/library/document/the-book", notes: "Signature articulation of the 'skin‑encapsulated ego' illusion; self as the universe selfing." },
+  { year: "1972", title: "In My Own Way (Autobiography)", link: "https://archive.org/details/inmyownwayautobi0000watt", notes: "Memoir tying life to philosophy; valuable meta‑commentary." },
+  { year: "1973", title: "Cloud‑Hidden, Whereabouts Unknown", link: "https://archive.org/details/cloudhiddenwhere00watt", notes: "Seasonal, pastoral meditations; late‑style wu‑wei—playful, ecological, unforced." },
+  { year: "1975", title: "Tao: The Watercourse Way", link: "https://openlibrary.org/works/OL19359096W/Tao_The_Watercourse_Way", notes: "Posthumous synthesis with Al Huang; exposition of Taoist text and praxis." },
+  { year: "2006", title: "Eastern Wisdom, Modern Life (Collected Talks)", link: "https://www.newworldlibrary.com/books/easternwisdom-moderlife", notes: "Curated broadcast essays; applied ethics of everyday life." },
+  { year: "2017", title: "The Collected Letters of Alan Watts", link: "https://www.newworldlibrary.com/books/the-collected-letters-of-alan-watts", notes: "Reveals private doubts and craft; crucial for triangulating dates and development." },
+  { year: "2020", title: "Just So", link: "https://www.soundstrue.com/products/just-so", notes: "Late essays; money/materialism with nondual clarity for modern concerns." }
+]
