@@ -3,6 +3,7 @@ import { BOOKS } from './data.books.js'
 import { KQED_EPISODES } from './data.kqed.js'
 import { ESSENTIAL_LECTURES } from './data.essential.js'
 import { THE_WORKS } from './data.theworks.js'
+import ChatBot from './ChatBot.jsx'
 
 const Search = ({ value, onChange }) => (
   <input className="input" placeholder="Search titles, notes…" value={value} onChange={e=>onChange(e.target.value)} />
@@ -118,14 +119,43 @@ export default function App() {
     { id: 'works', label: 'The Works (Audio Series Index)' },
   ]
 
+  // Check if any results exist for each section when searching
+  const hasResults = useMemo(() => {
+    if (!q) return { books: true, kqed: true, essentials: true, works: true }
+    
+    const booksHasResults = BOOKS.some(b => {
+      const s = (b.title + ' ' + b.notes + ' ' + b.year).toLowerCase()
+      return s.includes(q.toLowerCase())
+    })
+    
+    const kqedHasResults = KQED_EPISODES.some(ep => {
+      const s = (ep.title + ' ' + (ep.notes||'')).toLowerCase()
+      return s.includes(q.toLowerCase())
+    })
+    
+    const essentialsHasResults = ESSENTIAL_LECTURES.some(ep => {
+      const s = (ep.title + ' ' + (ep.notes||'')).toLowerCase()
+      return s.includes(q.toLowerCase())
+    })
+    
+    const worksHasResults = THE_WORKS.some(col => 
+      col.albums.some(a => 
+        a.title.toLowerCase().includes(q.toLowerCase()) || 
+        a.recordings.some(r => r.title.toLowerCase().includes(q.toLowerCase()))
+      )
+    )
+    
+    return { books: booksHasResults, kqed: kqedHasResults, essentials: essentialsHasResults, works: worksHasResults }
+  }, [q])
+
   return (
     <div>
       <header>
         <div className="container">
           <div className="toolbar" style={{justifyContent:'space-between'}}>
             <div>
-              <h1>Alan Watts – Complete Works (Reference)</h1>
-              <div className="muted">Curated reference with links to primary sources</div>
+              <h1>Sum1namedAlan</h1>
+              <div className="muted">An AI embodying Alan Watts' approach to life and philosophy + reference archive</div>
               <div className="tabs">
                 {tabs.map(t => (
                   <button key={t.id} className={"tab"+(t.id===tab?" active":"")} onClick={()=>setTab(t.id)}>{t.label}</button>
@@ -133,19 +163,50 @@ export default function App() {
               </div>
             </div>
             <div className="toolbar">
-              <input className="input" placeholder="Search across notes & titles…" value={q} onChange={e=>setQ(e.target.value)} />
+              <input className="input" placeholder="Search across all content…" value={q} onChange={e=>setQ(e.target.value)} />
             </div>
           </div>
         </div>
       </header>
 
       <main className="container" style={{paddingTop:'12px'}}>
-        {tab === 'books' && <Section title="Books"><BooksView q={q} /></Section>}
-        {tab === 'kqed' && <Section title="KQED — Eastern Wisdom & Modern Life (1959–60)"><KQEDView q={q} /></Section>}
-        {tab === 'essentials' && <Section title="The Essential Lectures (1972) — filmed"><EssentialsView q={q} /></Section>}
-        {tab === 'works' && <Section title="The Works — Complete Audio Series Index"><WorksView q={q} /></Section>}
-        <div className="footer">Notes compiled from official listings and public archives. Always cross‑check against the Alan Watts Electronic University for canonical metadata.</div>
+        {q ? (
+          // When searching, show all sections with results
+          <>
+            {hasResults.books && <Section title="Books"><BooksView q={q} /></Section>}
+            {hasResults.kqed && <Section title="KQED — Eastern Wisdom & Modern Life (1959–60)"><KQEDView q={q} /></Section>}
+            {hasResults.essentials && <Section title="The Essential Lectures (1972) — filmed"><EssentialsView q={q} /></Section>}
+            {hasResults.works && <Section title="The Works — Complete Audio Series Index"><WorksView q={q} /></Section>}
+            {!hasResults.books && !hasResults.kqed && !hasResults.essentials && !hasResults.works && 
+              <div style={{padding:'48px', textAlign:'center', color:'#6b7280'}}>No results found for "{q}"</div>
+            }
+          </>
+        ) : (
+          // When not searching, show only the selected tab
+          <>
+            {tab === 'books' && <Section title="Books"><BooksView q={q} /></Section>}
+            {tab === 'kqed' && <Section title="KQED — Eastern Wisdom & Modern Life (1959–60)"><KQEDView q={q} /></Section>}
+            {tab === 'essentials' && <Section title="The Essential Lectures (1972) — filmed"><EssentialsView q={q} /></Section>}
+            {tab === 'works' && <Section title="The Works — Complete Audio Series Index"><WorksView q={q} /></Section>}
+          </>
+        )}
+        <div className="footer">
+          <div style={{marginBottom: '16px'}}>
+            Notes compiled from official listings and public archives. Always cross‑check against the <a href="https://alanwatts.org" target="_blank" rel="noopener noreferrer">Alan Watts Organization</a> for canonical metadata.
+          </div>
+          <div style={{fontSize: '12px', lineHeight: '1.5', color: '#6b7280'}}>
+            <div style={{marginBottom: '8px'}}>
+              <strong>Disclaimer:</strong> All information provided here was obtained from open sources and is provided "as is". 
+              The AI chat assistant is an automated tool that generates responses based on philosophical concepts - like using any tool, 
+              use it with caution and don't necessarily believe everything it says.
+            </div>
+            <div>
+              Created by <a href="https://sum1solutions.com" target="_blank" rel="noopener noreferrer">Sum1 Solutions</a>
+            </div>
+          </div>
+        </div>
       </main>
+      <ChatBot currentTab={tab} />
     </div>
   )
 }

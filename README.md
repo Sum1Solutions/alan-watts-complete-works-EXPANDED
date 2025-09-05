@@ -1,47 +1,104 @@
-# Alan Watts – Complete Works (Reference)
+# Sum1namedAlan - Embodying Alan Watts' Approach to Life
 
-This project is a curated reference of Alan Watts's works, including books, lectures, and audio series, with links to primary sources (where available).
+An AI personality that embodies Alan Watts' (1915-1973) approach to philosophy and living, combined with a comprehensive reference library of his complete works.
+
+## Features
+
+### Interactive AI Personality
+- **Sum1namedAlan** - An AI that discusses Watts' philosophy while being transparent about uncertainty
+- Biographical knowledge of Watts' journey from Anglican priest to Zen interpreter
+- Context-aware conversation based on which section you're browsing
+- Anti-hallucination safeguards - admits when uncertain rather than fabricating
+
+### Complete Reference Library
+- **Books** — All major published works with publication years and archive links
+- **KQED Series** — "Eastern Wisdom & Modern Life" radio talks (1959–60)
+- **Essential Lectures** — The filmed lecture series from 1972
+- **The Works** — Complete audio archive index with original source links
+
+### Smart Context System
+- AI tracks which section you're viewing (Books/KQED/Essential Lectures/The Works)
+- Lightweight context updates when you switch sections
+- Optimized prompt system - only rebuilds context when you actually chat
+- Maintains conversation history while being aware of your browsing
 
 ## Getting Started
 
-To get the project running locally, follow these steps:
+**Local Development:**
+```bash
+npm install
+npm run dev
+```
 
-1.  **Install dependencies:**
-    ```sh
-    npm install
-    ```
+**Deployment to Cloudflare Pages:**
+```bash
+npm run build
+npx wrangler pages deploy dist --project-name=alan-watts-complete-works
+```
 
-2.  **Run the development server:**
-    ```sh
-    npm run dev
-    ```
+The application will be available at `http://localhost:5173` for local development.
 
-The application will be available at `http://localhost:5173` (or another port if 5173 is in use).
+## Architecture
 
-## Contributing
+**Frontend:**
+- React + Vite
+- Real-time chat interface with Sum1namedAlan
+- Tab-based navigation with search across all collections
+- Markdown-style link rendering in chat
 
-We welcome contributions to help grow this reference. If you have additional information, commentary, or links, please follow these guidelines:
+**Backend:**
+- Cloudflare Pages + Functions
+- Cloudflare AI (Llama 3.1-8B-Instruct) for conversation
+- Context-aware prompt engineering with anti-hallucination safeguards
+- Optimized token usage with smart history management
 
-### Data Structure
+## AI Personality Design
 
-The data for this project is stored in the `src/` directory in several `data.*.js` files:
+Sum1namedAlan uses sophisticated prompt engineering with:
 
-*   `src/data.books.js`: For books written by Alan Watts.
-*   `src/data.kqed.js`: For the KQED television series "Eastern Wisdom & Modern Life".
-*   `src/data.essential.js`: For "The Essential Lectures" video series.
-*   `src/data.theworks.js`: For "The Works" audio series index.
+- **Personality embodiment** - Channels Watts' curiosity, humor, and philosophical approach
+- **Biographical grounding** - Knows key life events that shaped his philosophy
+- **Anti-hallucination rules** - Multiple uncertainty acknowledgment patterns
+- **Context awareness** - Understands current browsing section and navigation history
+- **Philosophical themes** - Core concepts like ego-as-illusion, life-as-play, wu wei
+
+**Honest AI Responses:**
+- Uses phrases like "I don't clearly recall that" when uncertain
+- Won't fabricate specific quotes, dates, or biographical details
+- Embraces Watts' "wisdom of insecurity" by being honest about knowledge limits
+- Can discuss both philosophy AND known aspects of how Watts figured things out
+
+## Data Structure
+
+The reference data is stored in `src/data.*.js` files:
+
+- `src/data.books.js`: Books by Alan Watts
+- `src/data.kqed.js`: KQED "Eastern Wisdom & Modern Life" series
+- `src/data.essential.js`: "The Essential Lectures" video series
+- `src/data.theworks.js`: "The Works" audio series index
 
 ### Adding New Information
 
-To add new entries, edit the appropriate `data.*.js` file. Follow the existing structure for each entry. For example, to add a new book, you would add a new object to the `BOOKS` array in `src/data.books.js`:
+To add entries, edit the appropriate data file. Example for books:
 
 ```javascript
 {
   year: "YYYY",
   title: "Book Title",
   link: "URL to source",
-  notes: "Your commentary or notes about the book."
+  notes: "Commentary or notes about the book."
 }
 ```
 
-Please ensure that any links provided are to primary sources or reputable archives.
+## Sources & Disclaimer
+
+Data compiled from:
+- Archive.org
+- Alan Watts Electronic University  
+- Publishers' official listings
+- Public domain archives
+- Wikipedia
+
+**Important:** All information is from open sources and provided "as is". Sum1namedAlan is an AI tool - like any automated system, use with caution and verify important information against primary sources.
+
+Created by [Sum1 Solutions](https://sum1solutions.com) | Official Watts resources: [Alan Watts Organization](https://alanwatts.org)
