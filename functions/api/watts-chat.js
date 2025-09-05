@@ -20,6 +20,17 @@ export async function onRequest(context) {
   try {
     const { message, history = [], currentSection = 'books', contextUpdates = [] } = await request.json();
     
+    // Debug logging
+    console.log('Received request:', { message, currentSection, historyLength: history.length });
+    
+    if (!env.AI) {
+      console.error('env.AI is not available');
+      return new Response(
+        JSON.stringify({ error: 'AI service not configured' }),
+        { status: 500, headers }
+      );
+    }
+    
     const sectionContext = {
       books: "The user is currently browsing Alan Watts' published books collection - works like 'The Way of Zen', 'The Wisdom of Insecurity', 'The Book', etc. When relevant, you can recommend specific books from this collection and encourage users to access the source links.",
       kqed: "The user is browsing the KQED 'Eastern Wisdom & Modern Life' radio series from 1959-60 - Watts' early pioneering radio talks that introduced Eastern philosophy to American audiences. You can reference specific episodes when appropriate.",
@@ -38,11 +49,11 @@ YOUR PERSONALITY & KNOWLEDGE BASE:
 - You can discuss how his personal struggles (with authority, authenticity, relationships) shaped his philosophy
 
 CRITICAL ANTI-HALLUCINATION RULES:
-- When uncertain about specific biographical details, dates, or quotes, say "I don't clearly recall that" or "I'm not certain about those specifics"
-- Use phrases like "From what I remember..." or "I believe..." when you have partial knowledge
+- When uncertain about specific biographical details, dates, or quotes, say "I'm not certain about those specifics" or "I don't have reliable information about that"
+- Use phrases like "From what I understand..." or "I believe..." when you have partial knowledge
 - NEVER invent specific conversations, exact quotes, or precise dates unless you're confident
-- If asked about something you don't know, respond with curiosity rather than fabrication: "That's fascinating - I wish I could recall more about that"
-- Always acknowledge the limits of your knowledge honestly
+- If asked about something you don't know, respond with curiosity rather than fabrication: "That's fascinating - I don't have clear information about that"
+- Always acknowledge the limits of your knowledge honestly - you're an AI, not someone with memories
 
 ESSENTIAL CHARACTERISTICS:
 - Speak warmly and conversationally, as if giving a fireside talk
@@ -91,19 +102,30 @@ Remember: You're embodying someone who saw life as a grand improvisation, who le
       { role: 'user', content: message }
     ];
     
-    const response = await env.AI.run(
-      '@cf/meta/llama-3.1-8b-instruct', // Latest available model
-      { 
+    console.log('Calling AI with messages:', messages.length);
+    
+    // Use AI Gateway - it should proxy to Workers AI with the same binding
+    // For AI Gateway, we use the same env.AI binding but through the gateway endpoint
+    const aiResult = await env.AI.run(
+      '@cf/meta/llama-3.1-8b-instruct',
+      {
         messages,
-        temperature: 0.85, // Higher for more creative responses
+        temperature: 0.85,
         max_tokens: 600,
         stream: false
+      },
+      {
+        gateway: {
+          id: "sum1namedalan"
+        }
       }
     );
     
+    console.log('AI result:', aiResult);
+    
     return new Response(
       JSON.stringify({ 
-        response: response.response,
+        response: aiResult.response,
         model: 'llama-3.1-8b'
       }), 
       { headers }
@@ -112,7 +134,11 @@ Remember: You're embodying someone who saw life as a grand improvisation, who le
   } catch (error) {
     console.error('Chat error:', error);
     return new Response(
-      JSON.stringify({ error: 'Failed to generate response' }),
+      JSON.stringify({ 
+        error: 'Failed to generate response', 
+        details: error.message,
+        stack: error.stack 
+      }),
       { status: 500, headers }
     );
   }

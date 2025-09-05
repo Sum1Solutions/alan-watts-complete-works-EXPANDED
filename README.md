@@ -9,6 +9,8 @@ An AI personality that embodies Alan Watts' (1915-1973) approach to philosophy a
 - Biographical knowledge of Watts' journey from Anglican priest to Zen interpreter
 - Context-aware conversation based on which section you're browsing
 - Anti-hallucination safeguards - admits when uncertain rather than fabricating
+- **Always-visible chat interface** - Prominently displayed for immediate engagement
+- **Mobile-optimized** - Fully responsive design with accessible chat on all devices
 
 ### Complete Reference Library
 - **Books** — All major published works with publication years and archive links
@@ -21,6 +23,12 @@ An AI personality that embodies Alan Watts' (1915-1973) approach to philosophy a
 - Lightweight context updates when you switch sections
 - Optimized prompt system - only rebuilds context when you actually chat
 - Maintains conversation history while being aware of your browsing
+
+### Enhanced User Experience
+- **Overlapping design** - Chat elegantly overlaps header with sophisticated shadows
+- **Glassmorphism effects** - Modern backdrop blur and gradient borders
+- **Responsive layout** - Desktop: 2-column with sticky chat, Mobile: stacked with accessible chat
+- **Visual depth** - Multi-layered shadows and lighting effects
 
 ## Getting Started
 
@@ -48,6 +56,7 @@ The application will be available at `http://localhost:5173` for local developme
 
 **Backend:**
 - Cloudflare Pages + Functions
+- **Cloudflare AI Gateway** - Enhanced observability, rate limiting, and analytics
 - Cloudflare AI (Llama 3.1-8B-Instruct) for conversation
 - Context-aware prompt engineering with anti-hallucination safeguards
 - Optimized token usage with smart history management
@@ -63,10 +72,11 @@ Sum1namedAlan uses sophisticated prompt engineering with:
 - **Philosophical themes** - Core concepts like ego-as-illusion, life-as-play, wu wei
 
 **Honest AI Responses:**
-- Uses phrases like "I don't clearly recall that" when uncertain
+- Uses phrases like "I'm not certain about those specifics" when uncertain
 - Won't fabricate specific quotes, dates, or biographical details
 - Embraces Watts' "wisdom of insecurity" by being honest about knowledge limits
 - Can discuss both philosophy AND known aspects of how Watts figured things out
+- **Authentic welcome** - Greets visitors with curiosity about how they found the site
 
 ## Data Structure
 
@@ -100,5 +110,13 @@ Data compiled from:
 - Wikipedia
 
 **Important:** All information is from open sources and provided "as is". Sum1namedAlan is an AI tool - like any automated system, use with caution and verify important information against primary sources.
+
+## Acknowledgments
+
+This project was built with the assistance of:
+- **Anthropic Claude** - AI assistance for development and architectural guidance
+- **OpenAI** - LLM technologies and AI development insights
+- **Windsurf** - Development environment and tooling
+- **Cloudflare** - AI Gateway, Pages hosting, and Workers infrastructure
 
 Created by [Sum1 Solutions](https://sum1solutions.com) | Official Watts resources: [Alan Watts Organization](https://alanwatts.org)

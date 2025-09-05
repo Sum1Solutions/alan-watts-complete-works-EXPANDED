@@ -1,0 +1,10 @@
+name = "alan-watts-complete-works"
+compatibility_date = "2024-01-15"
+pages_build_output_dir = "dist"
+
+[ai]
+binding = "AI"
+
+[vars]
+ENVIRONMENT = "production"
+CF_API_TOKEN = "ujEmwqFMIA-liToMoyjSIYnH3EJv1ZSw4Cpxwwrh"

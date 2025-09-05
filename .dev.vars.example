@@ -1,0 +1,6 @@
+# Example environment variables for development
+# Copy this file to .dev.vars and add your actual values
+
+# Cloudflare API Token for AI Gateway access
+# Get from: https://dash.cloudflare.com/profile/api-tokens
+CLOUDFLARE_API_TOKEN=your_cloudflare_api_token_here

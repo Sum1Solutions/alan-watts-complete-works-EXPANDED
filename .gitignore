@@ -8,5 +8,11 @@
 .idea
 .vscode
 
+# Environment variables & secrets
+.dev.vars
+.env
+.env.local
+.env.*.local
+
 # Misc
 .DS_Store

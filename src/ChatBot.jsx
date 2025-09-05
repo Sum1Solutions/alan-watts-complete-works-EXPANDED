@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-export default function ChatBot({ currentTab = 'books' }) {
+export default function ChatBot({ currentTab = 'books', isEmbedded = false }) {
   const [isOpen, setIsOpen] = useState(true);
   const [messages, setMessages] = useState([
-    { role: 'assistant', content: "Hello! I'm Sum1namedAlan. I embody [Alan Watts'](https://en.wikipedia.org/wiki/Alan_Watts) (1915-1973) approach to understanding life - his curiosity about how Eastern wisdom could illuminate Western living, his journey from Anglican priest to Zen interpreter, his struggles with authenticity and his insights about the \"cosmic game\" we're all playing.\n\nI can share what's known about how he figured things out, discuss his philosophy, and guide you through his works. When I don't recall something clearly, I'll say so rather than guess.\n\n\"We are the universe experiencing itself subjectively\" - what would you like to explore about Alan's journey or ideas?" }
+    { role: 'assistant', content: "Hello! I'm Sum1namedAlan. I embody [Alan Watts'](https://en.wikipedia.org/wiki/Alan_Watts) (1915-1973) approach to understanding life - his curiosity about how Eastern wisdom could illuminate Western living, his journey from Anglican priest to Zen interpreter, his struggles with authenticity and his insights about the \"cosmic game\" we're all playing.\n\nI can share what's known about how he figured things out, discuss his philosophy, and guide you through his works. When I'm not certain about something, I'll be honest about that rather than guess.\n\nDid you come here through a search, add to an initial response, or did you find me from one of those fascinating inspirational sites that have melodies that seem to be trying to articulate a feeling, perhaps? Anyway, welcome!\n\n\"We are the universe experiencing itself subjectively\" - what would you like to explore about Alan's journey or ideas?" }
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -143,57 +143,35 @@ export default function ChatBot({ currentTab = 'books' }) {
     }
   };
   
-  if (!isOpen) {
-    return (
-      <button 
-        onClick={() => setIsOpen(true)}
-        style={{
-          position: 'fixed',
-          bottom: '20px',
-          right: '20px',
-          width: '60px',
-          height: '60px',
-          borderRadius: '50%',
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          border: 'none',
-          color: 'white',
-          fontSize: '24px',
-          cursor: 'pointer',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-          transition: 'transform 0.2s',
-          zIndex: 1000
-        }}
-        onMouseOver={e => e.currentTarget.style.transform = 'scale(1.1)'}
-        onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
-        title="Chat with Alan Watts"
-      >
-        💬
-      </button>
-    );
-  }
+  // Always show the chat now - no floating button mode
   
+  const containerStyle = {
+    width: '100%',
+    height: isEmbedded ? (typeof window !== 'undefined' && window.innerWidth < 1024 ? '500px' : '100vh') : '650px',
+    maxHeight: isEmbedded ? 'calc(100vh - 40px)' : '650px',
+    borderRadius: '16px',
+    // Enhanced shadow for overlapping effect
+    boxShadow: '0 20px 60px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.05), inset 0 1px 0 rgba(255,255,255,0.1)',
+    display: 'flex',
+    flexDirection: 'column',
+    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+    border: '2px solid rgba(102, 126, 234, 0.2)',
+    position: 'relative',
+    zIndex: 15,
+    // Subtle backdrop blur effect
+    backdropFilter: 'blur(10px)',
+    // Enhanced gradient border background
+    background: 'linear-gradient(white, white) padding-box, linear-gradient(135deg, rgba(102, 126, 234, 0.3), rgba(118, 75, 162, 0.3)) border-box'
+  };
+
   return (
-    <div style={{
-      position: 'fixed',
-      bottom: '20px',
-      right: '20px',
-      width: '400px',
-      height: '650px',
-      background: 'white',
-      borderRadius: '16px',
-      boxShadow: '0 20px 60px rgba(0,0,0,0.25)',
-      display: 'flex',
-      flexDirection: 'column',
-      zIndex: 1000,
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-      border: '2px solid rgba(102, 126, 234, 0.2)'
-    }}>
+    <div style={containerStyle}>
       {/* Header */}
       <div style={{
         padding: '16px 20px',
         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         color: 'white',
-        borderRadius: '12px 12px 0 0',
+        borderRadius: isEmbedded ? '14px 14px 0 0' : '12px 12px 0 0',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center'
@@ -202,28 +180,7 @@ export default function ChatBot({ currentTab = 'books' }) {
           <div style={{ fontWeight: 600, fontSize: '16px' }}>Sum1namedAlan</div>
           <div style={{ fontSize: '12px', opacity: 0.9 }}>Embodying Watts' approach to living</div>
         </div>
-        <button 
-          onClick={() => setIsOpen(false)}
-          style={{
-            background: 'none',
-            border: 'none',
-            color: 'white',
-            fontSize: '20px',
-            cursor: 'pointer',
-            padding: '0',
-            width: '28px',
-            height: '28px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderRadius: '4px',
-            transition: 'background 0.2s'
-          }}
-          onMouseOver={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
-          onMouseOut={e => e.currentTarget.style.background = 'none'}
-        >
-          ✕
-        </button>
+        {/* Chat always visible - no close button needed */}
       </div>
       
       {/* Messages */}

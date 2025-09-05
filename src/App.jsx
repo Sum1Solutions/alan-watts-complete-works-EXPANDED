@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useMemo, useState, useEffect } from 'react'
 import { BOOKS } from './data.books.js'
 import { KQED_EPISODES } from './data.kqed.js'
 import { ESSENTIAL_LECTURES } from './data.essential.js'
@@ -111,6 +111,15 @@ const WorksView = ({ q }) => {
 export default function App() {
   const [tab, setTab] = useState('books')
   const [q, setQ] = useState('')
+  const [isDesktop, setIsDesktop] = useState(typeof window !== 'undefined' && window.innerWidth >= 1024)
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsDesktop(window.innerWidth >= 1024)
+    }
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   const tabs = [
     { id: 'books', label: 'Books' },
@@ -169,44 +178,77 @@ export default function App() {
         </div>
       </header>
 
-      <main className="container" style={{paddingTop:'12px'}}>
-        {q ? (
-          // When searching, show all sections with results
-          <>
-            {hasResults.books && <Section title="Books"><BooksView q={q} /></Section>}
-            {hasResults.kqed && <Section title="KQED — Eastern Wisdom & Modern Life (1959–60)"><KQEDView q={q} /></Section>}
-            {hasResults.essentials && <Section title="The Essential Lectures (1972) — filmed"><EssentialsView q={q} /></Section>}
-            {hasResults.works && <Section title="The Works — Complete Audio Series Index"><WorksView q={q} /></Section>}
-            {!hasResults.books && !hasResults.kqed && !hasResults.essentials && !hasResults.works && 
-              <div style={{padding:'48px', textAlign:'center', color:'#6b7280'}}>No results found for "{q}"</div>
-            }
-          </>
+      <div style={{
+        display: 'grid', 
+        gridTemplateColumns: isDesktop ? '400px 1fr' : '1fr', 
+        gap: '24px', 
+        minHeight: 'calc(100vh - 200px)',
+        maxWidth: '1400px',
+        margin: '0 auto',
+        padding: '0 20px'
+      }}>
+        {/* Desktop: sticky left sidebar with overlap effect */}
+        {isDesktop ? (
+          <div style={{
+            gridColumn: '1', 
+            position: 'sticky', 
+            top: '-20px',  // Overlap the header by 20px
+            alignSelf: 'start',
+            zIndex: 15  // Above the header (z-index: 10)
+          }}>
+            <ChatBot currentTab={tab} isEmbedded={true} />
+          </div>
         ) : (
-          // When not searching, show only the selected tab
-          <>
-            {tab === 'books' && <Section title="Books"><BooksView q={q} /></Section>}
-            {tab === 'kqed' && <Section title="KQED — Eastern Wisdom & Modern Life (1959–60)"><KQEDView q={q} /></Section>}
-            {tab === 'essentials' && <Section title="The Essential Lectures (1972) — filmed"><EssentialsView q={q} /></Section>}
-            {tab === 'works' && <Section title="The Works — Complete Audio Series Index"><WorksView q={q} /></Section>}
-          </>
+          /* Mobile: embedded at top with overlap */
+          <div style={{
+            gridColumn: '1',
+            position: 'sticky',
+            top: '-20px',  // Overlap the header
+            zIndex: 15,
+            marginBottom: '20px'
+          }}>
+            <ChatBot currentTab={tab} isEmbedded={true} />
+          </div>
         )}
-        <div className="footer">
-          <div style={{marginBottom: '16px'}}>
-            Notes compiled from official listings and public archives. Always cross‑check against the <a href="https://alanwatts.org" target="_blank" rel="noopener noreferrer">Alan Watts Organization</a> for canonical metadata.
-          </div>
-          <div style={{fontSize: '12px', lineHeight: '1.5', color: '#6b7280'}}>
-            <div style={{marginBottom: '8px'}}>
-              <strong>Disclaimer:</strong> All information provided here was obtained from open sources and is provided "as is". 
-              The AI chat assistant is an automated tool that generates responses based on philosophical concepts - like using any tool, 
-              use it with caution and don't necessarily believe everything it says.
+        
+        <main className="container" style={{paddingTop:'12px', gridColumn: isDesktop ? '2' : '1'}}>
+          {q ? (
+            // When searching, show all sections with results
+            <>
+              {hasResults.books && <Section title="Books"><BooksView q={q} /></Section>}
+              {hasResults.kqed && <Section title="KQED — Eastern Wisdom & Modern Life (1959–60)"><KQEDView q={q} /></Section>}
+              {hasResults.essentials && <Section title="The Essential Lectures (1972) — filmed"><EssentialsView q={q} /></Section>}
+              {hasResults.works && <Section title="The Works — Complete Audio Series Index"><WorksView q={q} /></Section>}
+              {!hasResults.books && !hasResults.kqed && !hasResults.essentials && !hasResults.works && 
+                <div style={{padding:'48px', textAlign:'center', color:'#6b7280'}}>No results found for "{q}"</div>
+              }
+            </>
+          ) : (
+            // When not searching, show only the selected tab
+            <>
+              {tab === 'books' && <Section title="Books"><BooksView q={q} /></Section>}
+              {tab === 'kqed' && <Section title="KQED — Eastern Wisdom & Modern Life (1959–60)"><KQEDView q={q} /></Section>}
+              {tab === 'essentials' && <Section title="The Essential Lectures (1972) — filmed"><EssentialsView q={q} /></Section>}
+              {tab === 'works' && <Section title="The Works — Complete Audio Series Index"><WorksView q={q} /></Section>}
+            </>
+          )}
+          <div className="footer">
+            <div style={{marginBottom: '16px'}}>
+              Notes compiled from official listings and public archives. Always cross‑check against the <a href="https://alanwatts.org" target="_blank" rel="noopener noreferrer">Alan Watts Organization</a> for canonical metadata.
             </div>
-            <div>
-              Created by <a href="https://sum1solutions.com" target="_blank" rel="noopener noreferrer">Sum1 Solutions</a>
+            <div style={{fontSize: '12px', lineHeight: '1.5', color: '#6b7280'}}>
+              <div style={{marginBottom: '8px'}}>
+                <strong>Disclaimer:</strong> All information provided here was obtained from open sources and is provided "as is". 
+                The AI chat assistant is an automated tool that generates responses based on philosophical concepts - like using any tool, 
+                use it with caution and don't necessarily believe everything it says.
+              </div>
+              <div>
+                Created by <a href="https://sum1solutions.com" target="_blank" rel="noopener noreferrer">Sum1 Solutions</a>
+              </div>
             </div>
           </div>
-        </div>
-      </main>
-      <ChatBot currentTab={tab} />
+        </main>
+      </div>
     </div>
   )
 }
