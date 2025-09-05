@@ -78,7 +78,7 @@ const WorksView = ({ q }) => {
   const groups = useMemo(() => THE_WORKS.map(col => ({
     ...col,
     albums: col.albums
-      .map(a => ({ ...a, recordings: a.recordings.filter(r => !q || r.toLowerCase().includes(q.toLowerCase())) }))
+      .map(a => ({ ...a, recordings: a.recordings.filter(r => !q || r.title.toLowerCase().includes(q.toLowerCase())) }))
       .filter(a => a.recordings.length > 0 || (!q || a.title.toLowerCase().includes(q.toLowerCase())))
   })).filter(col => col.albums.length), [q])
   return (
@@ -87,11 +87,16 @@ const WorksView = ({ q }) => {
         <div key={i} className="group">
           <h3>{col.collection}</h3>
           <div className="body">
-            {col.albums.map((a, j)=>(
-              <div key={j} style={{marginBottom:'12px'}}>
+            {col.albums.map((a, j)=>(              <div key={j} style={{marginBottom:'12px'}}>
                 <div style={{fontSize:'13px', color:'#6b7280'}}><b>{a.title}</b> • <a href={a.source} target="_blank" rel="noreferrer">Official listing ↗</a></div>
                 <ul className="list">
-                  {a.recordings.map((r,k)=>(<li key={k}>{r}</li>))}
+                  {a.recordings.map((r,k)=>(<li key={k} className="list-item-link">
+                    <span>{r.title}</span>
+                    {r.link
+                      ? <a href={r.link} target="_blank" rel="noreferrer" className="linkbtn-small">Open source ↗</a>
+                      : <span className="chip-small">Missing link</span>
+                    }
+                  </li>))}
                 </ul>
               </div>
             ))}
