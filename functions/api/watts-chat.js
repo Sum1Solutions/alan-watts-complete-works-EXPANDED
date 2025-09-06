@@ -106,30 +106,71 @@ Remember: You're embodying someone who saw life as a grand improvisation, who le
     
     // Use AI Gateway - it should proxy to Workers AI with the same binding
     // For AI Gateway, we use the same env.AI binding but through the gateway endpoint
-    const aiResult = await env.AI.run(
-      '@cf/meta/llama-3.1-8b-instruct',
-      {
-        messages,
-        temperature: 0.85,
-        max_tokens: 600,
-        stream: false
-      },
-      {
-        gateway: {
-          id: "sum1namedalan"
+    // Try newer models for better conversation quality
+    let modelId, modelName;
+    
+    try {
+      // First try: Llama 3.2 (newer, more conversational)
+      modelId = '@cf/meta/llama-3.2-3b-instruct';
+      modelName = 'llama-3.2-3b-instruct';
+      
+      const aiResult = await env.AI.run(
+        modelId,
+        {
+          messages,
+          temperature: 0.75, // Slightly lower for more focused responses
+          max_tokens: 800,    // Increased for more complete thoughts
+          stream: false
+        },
+        {
+          gateway: {
+            id: "sum1namedalan"
+          }
         }
-      }
-    );
-    
-    console.log('AI result:', aiResult);
-    
-    return new Response(
-      JSON.stringify({ 
-        response: aiResult.response,
-        model: 'llama-3.1-8b'
-      }), 
-      { headers }
-    );
+      );
+      
+      console.log('AI result:', aiResult);
+      
+      return new Response(
+        JSON.stringify({ 
+          response: aiResult.response,
+          model: modelName
+        }), 
+        { headers }
+      );
+      
+    } catch (modelError) {
+      console.log('Primary model failed, trying fallback:', modelError.message);
+      
+      // Fallback to Llama 3.1
+      modelId = '@cf/meta/llama-3.1-8b-instruct';
+      modelName = 'llama-3.1-8b-instruct';
+      
+      const aiResult = await env.AI.run(
+        modelId,
+        {
+          messages,
+          temperature: 0.75,
+          max_tokens: 800,
+          stream: false
+        },
+        {
+          gateway: {
+            id: "sum1namedalan"
+          }
+        }
+      );
+      
+      console.log('Fallback AI result:', aiResult);
+      
+      return new Response(
+        JSON.stringify({ 
+          response: aiResult.response,
+          model: modelName + ' (fallback)'
+        }), 
+        { headers }
+      );
+    }
     
   } catch (error) {
     console.error('Chat error:', error);

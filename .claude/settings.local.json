@@ -4,7 +4,10 @@
       "Bash(npx wrangler pages deploy:*)",
       "Bash(npx wrangler pages project create:*)",
       "Bash(npm run build:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(npm run dev:*)",
+      "Bash(node:*)",
+      "Bash(curl:*)"
     ],
     "deny": [],
     "ask": []

@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-export default function ChatBot({ currentTab = 'books', isEmbedded = false }) {
+export default function ChatBot({ currentTab = 'books', isEmbedded = false, showThemeToggle = false }) {
   const [isOpen, setIsOpen] = useState(true);
   const [messages, setMessages] = useState([
     { role: 'assistant', content: "Hello! I'm Sum1namedAlan. I embody [Alan Watts'](https://en.wikipedia.org/wiki/Alan_Watts) (1915-1973) approach to understanding life - his curiosity about how Eastern wisdom could illuminate Western living, his journey from Anglican priest to Zen interpreter, his struggles with authenticity and his insights about the \"cosmic game\" we're all playing.\n\nI can share what's known about how he figured things out, discuss his philosophy, and guide you through his works. When I'm not certain about something, I'll be honest about that rather than guess.\n\nDid you come here through a search, add to an initial response, or did you find me from one of those fascinating inspirational sites that have melodies that seem to be trying to articulate a feeling, perhaps? Anyway, welcome!\n\n\"We are the universe experiencing itself subjectively\" - what would you like to explore about Alan's journey or ideas?" }
@@ -9,6 +9,29 @@ export default function ChatBot({ currentTab = 'books', isEmbedded = false }) {
   const [isLoading, setIsLoading] = useState(false);
   const [lastKnownTab, setLastKnownTab] = useState(currentTab);
   const messagesEndRef = useRef(null);
+  const inputRef = useRef(null);
+  
+  // Theme toggle state and logic (only when showThemeToggle is true)
+  const [theme, setTheme] = useState(() => {
+    if (!showThemeToggle) return 'light';
+    if (typeof window !== 'undefined') {
+      const savedTheme = localStorage.getItem('theme')
+      if (savedTheme) return savedTheme
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+    }
+    return 'light'
+  });
+
+  useEffect(() => {
+    if (!showThemeToggle) return;
+    document.documentElement.setAttribute('data-theme', theme)
+    localStorage.setItem('theme', theme)
+  }, [theme, showThemeToggle]);
+
+  const toggleTheme = () => {
+    if (!showThemeToggle) return;
+    setTheme(prev => prev === 'light' ? 'dark' : 'light')
+  };
   
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -71,7 +94,11 @@ export default function ChatBot({ currentTab = 'books', isEmbedded = false }) {
   
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+    // Maintain focus on input during conversation
+    if (!isLoading && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [messages, isLoading]);
 
   // Send lightweight context update when tab changes
   useEffect(() => {
@@ -111,7 +138,19 @@ export default function ChatBot({ currentTab = 'books', isEmbedded = false }) {
       const conversationHistory = recentMessages.filter(msg => !msg.isContextUpdate);
       const contextUpdates = recentMessages.filter(msg => msg.isContextUpdate);
 
-      const response = await fetch('/api/watts-chat', {
+      console.log('Sending chat request:', {
+        message: userMessage,
+        history: conversationHistory.slice(-6),
+        currentSection: currentTab,
+        contextUpdates: contextUpdates
+      });
+
+      // Use production API for both dev and production
+      const apiUrl = window.location.hostname === 'localhost' 
+        ? 'https://master.alan-watts-complete-works.pages.dev/api/watts-chat'
+        : '/api/watts-chat';
+      
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -122,7 +161,17 @@ export default function ChatBot({ currentTab = 'books', isEmbedded = false }) {
         })
       });
       
+      console.log('Response status:', response.status);
+      console.log('Response headers:', response.headers);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Response not OK:', response.status, errorText);
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
+      }
+      
       const data = await response.json();
+      console.log('Response data:', data);
       
       if (data.response) {
         setMessages(prev => [...prev, { 
@@ -136,51 +185,71 @@ export default function ChatBot({ currentTab = 'books', isEmbedded = false }) {
       console.error('Chat error:', error);
       setMessages(prev => [...prev, { 
         role: 'assistant', 
-        content: "Ah, it seems we've hit a bit of a snag in the cosmic machinery! Perhaps try again in a moment. After all, even the universe needs to catch its breath sometimes." 
+        content: `Ah, it seems we've hit a bit of a snag in the cosmic machinery! Error: ${error.message}. Perhaps try again in a moment.` 
       }]);
     } finally {
       setIsLoading(false);
+      // Ensure input stays focused after message is sent
+      requestAnimationFrame(() => {
+        inputRef.current?.focus();
+      });
     }
   };
   
   // Always show the chat now - no floating button mode
   
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
+  
   const containerStyle = {
     width: '100%',
-    height: isEmbedded ? (typeof window !== 'undefined' && window.innerWidth < 1024 ? '500px' : '100vh') : '650px',
-    maxHeight: isEmbedded ? 'calc(100vh - 40px)' : '650px',
-    borderRadius: '16px',
-    // Enhanced shadow for overlapping effect
-    boxShadow: '0 20px 60px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.05), inset 0 1px 0 rgba(255,255,255,0.1)',
+    height: isMobile ? '400px' : '100vh',
+    borderRadius: isMobile ? '12px 12px 0 0' : '0',
+    boxShadow: isMobile ? '0 -10px 30px rgba(0,0,0,0.25)' : 'none',
     display: 'flex',
     flexDirection: 'column',
     fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-    border: '2px solid rgba(102, 126, 234, 0.2)',
+    border: isMobile ? '1px solid rgba(102, 126, 234, 0.2)' : 'none',
+    borderRight: isMobile ? 'none' : '2px solid var(--border)',
     position: 'relative',
-    zIndex: 15,
-    // Subtle backdrop blur effect
-    backdropFilter: 'blur(10px)',
-    // Enhanced gradient border background
-    background: 'linear-gradient(white, white) padding-box, linear-gradient(135deg, rgba(102, 126, 234, 0.3), rgba(118, 75, 162, 0.3)) border-box'
+    background: 'var(--chat-bg)'
   };
 
   return (
     <div style={containerStyle}>
       {/* Header */}
       <div style={{
-        padding: '16px 20px',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        padding: '20px',
+        background: 'var(--orange)',
         color: 'white',
-        borderRadius: isEmbedded ? '14px 14px 0 0' : '12px 12px 0 0',
+        borderRadius: isMobile ? '12px 12px 0 0' : '0',
         display: 'flex',
-        justifyContent: 'space-between',
+        justifyContent: showThemeToggle ? 'space-between' : 'center',
         alignItems: 'center'
       }}>
-        <div>
-          <div style={{ fontWeight: 600, fontSize: '16px' }}>Sum1namedAlan</div>
-          <div style={{ fontSize: '12px', opacity: 0.9 }}>Embodying Watts' approach to living</div>
-        </div>
-        {/* Chat always visible - no close button needed */}
+        <div style={{ fontWeight: 600, fontSize: '28px', textAlign: 'center', flex: showThemeToggle ? 1 : 'none' }}>Sum1NamedAlan</div>
+        {showThemeToggle && (
+          <button
+            onClick={toggleTheme}
+            style={{
+              padding: '6px 12px',
+              border: '1px solid rgba(255,255,255,0.3)',
+              borderRadius: '20px',
+              background: 'rgba(255,255,255,0.1)',
+              color: 'white',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '18px',
+              minWidth: '44px',
+              height: '32px',
+              marginLeft: '16px'
+            }}
+            title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+          >
+            {theme === 'light' ? '🌙' : '☀️'}
+          </button>
+        )}
       </div>
       
       {/* Messages */}
@@ -210,9 +279,9 @@ export default function ChatBot({ currentTab = 'books', isEmbedded = false }) {
               padding: '12px 16px',
               borderRadius: '12px',
               background: msg.role === 'user' 
-                ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-                : '#f3f4f6',
-              color: msg.role === 'user' ? 'white' : '#1f2937',
+                ? 'var(--orange)'
+                : 'var(--card)',
+              color: msg.role === 'user' ? 'white' : 'var(--fg)',
               fontSize: '14px',
               lineHeight: '1.5'
             }}>
@@ -257,11 +326,13 @@ export default function ChatBot({ currentTab = 'books', isEmbedded = false }) {
         gap: '12px'
       }}>
         <input
+          ref={inputRef}
           value={input}
           onChange={e => setInput(e.target.value)}
-          onKeyPress={e => e.key === 'Enter' && sendMessage()}
+          onKeyDown={e => e.key === 'Enter' && !e.shiftKey && input.trim() && sendMessage()}
           placeholder="Ask about Alan's journey, philosophy, how he figured things out..."
           disabled={isLoading}
+          autoFocus
           style={{
             flex: 1,
             padding: '10px 14px',
@@ -271,8 +342,8 @@ export default function ChatBot({ currentTab = 'books', isEmbedded = false }) {
             outline: 'none',
             transition: 'border-color 0.2s'
           }}
-          onFocus={e => e.target.style.borderColor = '#667eea'}
-          onBlur={e => e.target.style.borderColor = '#d1d5db'}
+          onFocus={e => e.target.style.borderColor = 'var(--orange)'}
+          onBlur={e => e.target.style.borderColor = 'var(--border)'}
         />
         <button
           onClick={sendMessage}
@@ -280,9 +351,9 @@ export default function ChatBot({ currentTab = 'books', isEmbedded = false }) {
           style={{
             padding: '10px 20px',
             background: isLoading || !input.trim() 
-              ? '#e5e7eb'
-              : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            color: isLoading || !input.trim() ? '#9ca3af' : 'white',
+              ? 'var(--border)'
+              : 'var(--orange)',
+            color: isLoading || !input.trim() ? 'var(--muted)' : 'white',
             border: 'none',
             borderRadius: '8px',
             fontWeight: 500,

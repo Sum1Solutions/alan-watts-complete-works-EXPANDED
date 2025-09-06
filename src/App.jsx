@@ -18,100 +18,150 @@ const Section = ({ title, children }) => (
   </section>
 )
 
-const BooksView = ({ q }) => {
-  const list = useMemo(() => BOOKS.filter(b => {
-    const s = (b.title + ' ' + b.notes + ' ' + b.year).toLowerCase()
-    return !q || s.includes(q.toLowerCase())
-  }), [q])
+const BooksView = () => (
+  <div className="cards">
+    {BOOKS.map((b,i)=>(
+      <article key={i} className="card">
+        <div className="chip">Book • {b.year}</div>
+        <h3 className="title">{b.title}</h3>
+        <p className="notes">{b.notes}</p>
+        <a className="linkbtn" href={b.link} target="_blank" rel="noreferrer">Open source ↗</a>
+      </article>
+    ))}
+  </div>
+)
+
+const KQEDView = () => (
+  <div className="cards">
+    {KQED_EPISODES.map((e)=>(
+      <article key={e.no} className="card">
+        <div className="chip">KQED Episode • {e.no}</div>
+        <h3 className="title">{e.title}</h3>
+        {e.notes && <p className="notes">{e.notes}</p>}
+        <a className="linkbtn" href={e.link} target="_blank" rel="noreferrer">Open episode ↗</a>
+      </article>
+    ))}
+  </div>
+)
+
+const EssentialsView = () => (
+  <div className="cards">
+    {ESSENTIAL_LECTURES.map((e)=>(
+      <article key={e.no} className="card">
+        <div className="chip">Essential Lectures • {e.no}</div>
+        <h3 className="title">{e.title}</h3>
+        {e.notes && <p className="notes">{e.notes}</p>}
+        <a className="linkbtn" href={e.link} target="_blank" rel="noreferrer">Open episode ↗</a>
+      </article>
+    ))}
+  </div>
+)
+
+const WorksView = () => {
+  // Flatten all recordings into cards
+  const allRecordings = [];
+  THE_WORKS.forEach(collection => {
+    collection.albums.forEach(album => {
+      album.recordings.forEach(recording => {
+        allRecordings.push({
+          ...recording,
+          albumTitle: album.title,
+          collection: collection.collection,
+          source: album.source
+        });
+      });
+    });
+  });
+
   return (
     <div className="cards">
-      {list.map((b,i)=>(
+      {allRecordings.map((r, i) => (
         <article key={i} className="card">
-          <div className="chip">Book • {b.year}</div>
-          <h3 className="title">{b.title}</h3>
-          <p className="notes">{b.notes}</p>
-          <a className="linkbtn" href={b.link} target="_blank" rel="noreferrer">Open source ↗</a>
+          <div className="chip">Audio Recording • {r.collection}</div>
+          <h3 className="title">{r.title}</h3>
+          <p className="notes">From: {r.albumTitle}</p>
+          {r.link 
+            ? <a className="linkbtn" href={r.link} target="_blank" rel="noreferrer">Open source ↗</a>
+            : <div className="linkbtn" style={{opacity: 0.5, cursor: 'not-allowed'}}>Missing link</div>
+          }
         </article>
       ))}
     </div>
-  )
+  );
 }
 
-const KQEDView = ({ q }) => {
-  const list = useMemo(() => KQED_EPISODES.filter(ep => {
-    const s = (ep.title + ' ' + (ep.notes||'')).toLowerCase()
-    return !q || s.includes(q.toLowerCase())
-  }), [q])
-  return (
-    <div className="cards">
-      {list.map((e)=>(
-        <article key={e.no} className="card">
-          <div className="chip">KQED Episode • {e.no}</div>
-          <h3 className="title">{e.title}</h3>
-          {e.notes && <p className="notes">{e.notes}</p>}
-          <a className="linkbtn" href={e.link} target="_blank" rel="noreferrer">Open episode ↗</a>
-        </article>
-      ))}
+const AllView = () => (
+  <div className="section" style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px', alignItems: 'start'}}>
+    <div>
+      <h2 style={{margin:'0 0 16px 0', fontSize:'20px', textAlign: 'center', color: 'var(--orange)', borderBottom: '2px solid var(--orange)', paddingBottom: '8px'}}>Books</h2>
+      <BooksView />
     </div>
-  )
-}
+    <div>
+      <h2 style={{margin:'0 0 16px 0', fontSize:'20px', textAlign: 'center', color: 'var(--orange)', borderBottom: '2px solid var(--orange)', paddingBottom: '8px'}}>KQED</h2>
+      <KQEDView />
+    </div>
+    <div>
+      <h2 style={{margin:'0 0 16px 0', fontSize:'20px', textAlign: 'center', color: 'var(--orange)', borderBottom: '2px solid var(--orange)', paddingBottom: '8px'}}>Essential Lectures</h2>
+      <EssentialsView />
+    </div>
+    <div>
+      <h2 style={{margin:'0 0 16px 0', fontSize:'20px', textAlign: 'center', color: 'var(--orange)', borderBottom: '2px solid var(--orange)', paddingBottom: '8px'}}>The Works</h2>
+      <WorksView />
+    </div>
+  </div>
+)
 
-const EssentialsView = ({ q }) => {
-  const list = useMemo(() => ESSENTIAL_LECTURES.filter(ep => {
-    const s = (ep.title + ' ' + (ep.notes||'')).toLowerCase()
-    return !q || s.includes(q.toLowerCase())
-  }), [q])
-  return (
-    <div className="cards">
-      {list.map((e)=>(
-        <article key={e.no} className="card">
-          <div className="chip">Essential Lectures • {e.no}</div>
-          <h3 className="title">{e.title}</h3>
-          {e.notes && <p className="notes">{e.notes}</p>}
-          <a className="linkbtn" href={e.link} target="_blank" rel="noreferrer">Open episode ↗</a>
-        </article>
-      ))}
-    </div>
-  )
-}
+// Theme Toggle Component
+const ThemeToggle = () => {
+  const [theme, setTheme] = useState(() => {
+    // Detect system preference on load
+    if (typeof window !== 'undefined') {
+      const savedTheme = localStorage.getItem('theme')
+      if (savedTheme) return savedTheme
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+    }
+    return 'light'
+  })
 
-const WorksView = ({ q }) => {
-  const groups = useMemo(() => THE_WORKS.map(col => ({
-    ...col,
-    albums: col.albums
-      .map(a => ({ ...a, recordings: a.recordings.filter(r => !q || r.title.toLowerCase().includes(q.toLowerCase())) }))
-      .filter(a => a.recordings.length > 0 || (!q || a.title.toLowerCase().includes(q.toLowerCase())))
-  })).filter(col => col.albums.length), [q])
+  useEffect(() => {
+    // Apply theme to document
+    document.documentElement.setAttribute('data-theme', theme)
+    localStorage.setItem('theme', theme)
+  }, [theme])
+
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'light' ? 'dark' : 'light')
+  }
+
   return (
-    <div className="section">
-      {groups.map((col, i) => (
-        <div key={i} className="group">
-          <h3>{col.collection}</h3>
-          <div className="body">
-            {col.albums.map((a, j)=>(              <div key={j} style={{marginBottom:'12px'}}>
-                <div style={{fontSize:'13px', color:'#6b7280'}}><b>{a.title}</b> • <a href={a.source} target="_blank" rel="noreferrer">Official listing ↗</a></div>
-                <ul className="list">
-                  {a.recordings.map((r,k)=>(<li key={k} className="list-item-link">
-                    <span>{r.title}</span>
-                    {r.link
-                      ? <a href={r.link} target="_blank" rel="noreferrer" className="linkbtn-small">Open source ↗</a>
-                      : <span className="chip-small">Missing link</span>
-                    }
-                  </li>))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        </div>
-      ))}
-    </div>
+    <button
+      onClick={toggleTheme}
+      style={{
+        padding: '6px 12px',
+        border: '1px solid var(--border)',
+        borderRadius: '20px',
+        background: 'var(--card)',
+        color: 'var(--fg)',
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: '18px',
+        minWidth: '44px',
+        height: '32px'
+      }}
+      title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+    >
+      {theme === 'light' ? '🌙' : '☀️'}
+    </button>
   )
 }
 
 export default function App() {
   const [tab, setTab] = useState('books')
-  const [q, setQ] = useState('')
   const [isDesktop, setIsDesktop] = useState(typeof window !== 'undefined' && window.innerWidth >= 1024)
+  const [chatWidth, setChatWidth] = useState(450)
+  const [isDragging, setIsDragging] = useState(false)
 
   useEffect(() => {
     const handleResize = () => {
@@ -121,6 +171,34 @@ export default function App() {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
+  // Handle mouse drag for resizing
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (!isDragging) return
+      const newWidth = Math.max(300, Math.min(800, window.innerWidth - e.clientX))
+      setChatWidth(newWidth)
+    }
+
+    const handleMouseUp = () => {
+      setIsDragging(false)
+    }
+
+    if (isDragging) {
+      document.addEventListener('mousemove', handleMouseMove)
+      document.addEventListener('mouseup', handleMouseUp)
+      document.body.style.cursor = 'col-resize'
+      document.body.style.userSelect = 'none'
+    } else {
+      document.body.style.cursor = ''
+      document.body.style.userSelect = ''
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove)
+      document.removeEventListener('mouseup', handleMouseUp)
+    }
+  }, [isDragging])
+
   const tabs = [
     { id: 'books', label: 'Books' },
     { id: 'kqed', label: 'KQED: Eastern Wisdom & Modern Life' },
@@ -128,127 +206,176 @@ export default function App() {
     { id: 'works', label: 'The Works (Audio Series Index)' },
   ]
 
-  // Check if any results exist for each section when searching
-  const hasResults = useMemo(() => {
-    if (!q) return { books: true, kqed: true, essentials: true, works: true }
-    
-    const booksHasResults = BOOKS.some(b => {
-      const s = (b.title + ' ' + b.notes + ' ' + b.year).toLowerCase()
-      return s.includes(q.toLowerCase())
-    })
-    
-    const kqedHasResults = KQED_EPISODES.some(ep => {
-      const s = (ep.title + ' ' + (ep.notes||'')).toLowerCase()
-      return s.includes(q.toLowerCase())
-    })
-    
-    const essentialsHasResults = ESSENTIAL_LECTURES.some(ep => {
-      const s = (ep.title + ' ' + (ep.notes||'')).toLowerCase()
-      return s.includes(q.toLowerCase())
-    })
-    
-    const worksHasResults = THE_WORKS.some(col => 
-      col.albums.some(a => 
-        a.title.toLowerCase().includes(q.toLowerCase()) || 
-        a.recordings.some(r => r.title.toLowerCase().includes(q.toLowerCase()))
-      )
-    )
-    
-    return { books: booksHasResults, kqed: kqedHasResults, essentials: essentialsHasResults, works: worksHasResults }
-  }, [q])
 
   return (
-    <div>
-      <header>
-        <div className="container">
-          <div className="toolbar" style={{justifyContent:'space-between'}}>
-            <div>
-              <h1>Sum1namedAlan</h1>
-              <div className="muted">An AI embodying Alan Watts' approach to life and philosophy + reference archive</div>
-              <div className="tabs">
-                {tabs.map(t => (
-                  <button key={t.id} className={"tab"+(t.id===tab?" active":"")} onClick={()=>setTab(t.id)}>{t.label}</button>
-                ))}
-              </div>
+    <div style={{
+      display: 'flex',
+      height: '100vh',
+      width: '100vw',
+      overflow: 'hidden'
+    }}>
+      {/* Desktop: Left Column Content Area */}
+      {isDesktop ? (
+        <div style={{
+          flex: 1,
+          height: '100vh',
+          overflow: 'auto',
+          background: 'var(--content-bg)'
+        }}>
+          {/* Integrated Header in Content */}
+          <div style={{
+            padding: '24px 32px',
+            background: 'var(--bg)',
+            position: 'sticky',
+            top: 0,
+            zIndex: 10
+          }}>
+            <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', marginBottom: '24px'}}>
+              <h1 style={{
+                margin: '0', 
+                fontSize: '32px',
+                color: 'var(--orange)',
+                fontWeight: '600'
+              }}>
+                An AI embodying Alan Watts' approach to life and philosophy
+              </h1>
             </div>
-            <div className="toolbar">
-              <input className="input" placeholder="Search across all content…" value={q} onChange={e=>setQ(e.target.value)} />
+            
+            {/* Orange divider line */}
+            <div style={{
+              height: '3px',
+              background: 'var(--orange)',
+              marginBottom: '16px'
+            }} />
+            
+            <div className="tabs">
+              <button className={"tab"+(tab==='books'?" active":"")} onClick={()=>setTab('books')}>Books</button>
+              <button className={"tab"+(tab==='kqed'?" active":"")} onClick={()=>setTab('kqed')}>KQED: Eastern Wisdom & Modern Life</button>
+              <button className={"tab"+(tab==='essentials'?" active":"")} onClick={()=>setTab('essentials')}>Essential Lectures (Video)</button>
+              <button className={"tab"+(tab==='works'?" active":"")} onClick={()=>setTab('works')}>The Works (Audio Series Index)</button>
+              <button className={"tab"+(tab==='all'?" active":"")} onClick={()=>setTab('all')}>All</button>
+            </div>
+          </div>
+          
+          {/* Content Area */}
+          <div style={{padding: '24px 32px'}}>
+            {tab === 'all' && <AllView />}
+            {tab === 'books' && <Section title="Books"><BooksView /></Section>}
+            {tab === 'kqed' && <Section title="KQED — Eastern Wisdom & Modern Life (1959–60)"><KQEDView /></Section>}
+            {tab === 'essentials' && <Section title="The Essential Lectures (1972) — filmed"><EssentialsView /></Section>}
+            {tab === 'works' && <Section title="The Works — Complete Audio Series Index"><WorksView /></Section>}
+          </div>
+          
+          {/* Persistent Footer */}
+          <div style={{
+            position: 'sticky',
+            bottom: 0,
+            background: 'var(--card)',
+            borderTop: '1px solid var(--border)',
+            padding: '12px 32px',
+            fontSize: '11px',
+            color: 'var(--muted)',
+            zIndex: 5
+          }}>
+            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px'}}>
+              <div>
+                Notes compiled from official listings and public archives. Always cross‑check against the <a href="https://alanwatts.org" target="_blank" rel="noopener noreferrer" style={{color: 'var(--orange)'}}>Alan Watts Organization</a> for canonical metadata.
+              </div>
+              <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
+                <span><strong>Disclaimer:</strong> Information provided "as is". AI responses are automated - use with caution.</span>
+                <span>•</span>
+                <span><a href="https://app.screencast.com/UkiROLrdG2fyI" target="_blank" rel="noopener noreferrer" style={{color: 'var(--orange)'}}>TL;DR (Too long; didn't read)</a></span>
+                <span>•</span>
+                <span>Created by <a href="https://sum1solutions.com" target="_blank" rel="noopener noreferrer" style={{color: 'var(--orange)'}}>Sum1 Solutions</a></span>
+              </div>
             </div>
           </div>
         </div>
-      </header>
+      ) : null}
 
-      <div style={{
-        display: 'grid', 
-        gridTemplateColumns: isDesktop ? '400px 1fr' : '1fr', 
-        gap: '24px', 
-        minHeight: 'calc(100vh - 200px)',
-        maxWidth: '1400px',
-        margin: '0 auto',
-        padding: '0 20px'
-      }}>
-        {/* Desktop: sticky left sidebar with overlap effect */}
-        {isDesktop ? (
+      {/* Desktop: Resizable Divider and Chat Column */}
+      {isDesktop && (
+        <>
+          {/* Resizable Divider */}
+          <div
+            onMouseDown={() => setIsDragging(true)}
+            style={{
+              width: '4px',
+              height: '100vh',
+              background: 'var(--border)',
+              cursor: 'col-resize',
+              flexShrink: 0,
+              transition: isDragging ? 'none' : 'background 0.2s',
+              borderLeft: '1px solid var(--border)'
+            }}
+            onMouseEnter={(e) => e.target.style.background = 'var(--orange)'}
+            onMouseLeave={(e) => e.target.style.background = 'var(--border)'}
+          />
+          
           <div style={{
-            gridColumn: '1', 
-            position: 'sticky', 
-            top: '-20px',  // Overlap the header by 20px
-            alignSelf: 'start',
-            zIndex: 15  // Above the header (z-index: 10)
+            width: `${chatWidth}px`,
+            height: '100vh',
+            overflow: 'hidden',
+            flexShrink: 0
           }}>
-            <ChatBot currentTab={tab} isEmbedded={true} />
+            <ChatBot currentTab={tab} isEmbedded={true} showThemeToggle={true} />
           </div>
-        ) : (
-          /* Mobile: embedded at top with overlap */
+        </>
+      )}
+
+      {!isDesktop && (
+        /* Mobile Layout */
+        <div style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100vh'
+        }}>
+          <header>
+            <div className="container">
+              <div className="toolbar" style={{justifyContent:'space-between'}}>
+                <div>
+                  <h1 style={{
+                    color: 'var(--orange)', 
+                    fontSize: '24px',
+                    fontWeight: '600'
+                  }}>
+                    An AI embodying Alan Watts' approach to life and philosophy
+                  </h1>
+                  <div className="tabs">
+                    <button className={"tab"+(tab==='books'?" active":"")} onClick={()=>setTab('books')}>Books</button>
+                    <button className={"tab"+(tab==='kqed'?" active":"")} onClick={()=>setTab('kqed')}>KQED: Eastern Wisdom & Modern Life</button>
+                    <button className={"tab"+(tab==='essentials'?" active":"")} onClick={()=>setTab('essentials')}>Essential Lectures (Video)</button>
+                    <button className={"tab"+(tab==='works'?" active":"")} onClick={()=>setTab('works')}>The Works (Audio Series Index)</button>
+                    <button className={"tab"+(tab==='all'?" active":"")} onClick={()=>setTab('all')}>All</button>
+                  </div>
+                </div>
+                <div className="toolbar">
+                  <ThemeToggle />
+                </div>
+              </div>
+            </div>
+          </header>
+          
+          <main className="container" style={{flex: 1, paddingTop:'12px'}}>
+            {tab === 'all' && <AllView />}
+            {tab === 'books' && <Section title="Books"><BooksView /></Section>}
+            {tab === 'kqed' && <Section title="KQED — Eastern Wisdom & Modern Life (1959–60)"><KQEDView /></Section>}
+            {tab === 'essentials' && <Section title="The Essential Lectures (1972) — filmed"><EssentialsView /></Section>}
+            {tab === 'works' && <Section title="The Works — Complete Audio Series Index"><WorksView /></Section>}
+          </main>
+          
+          {/* Mobile: Chat at bottom */}
           <div style={{
-            gridColumn: '1',
             position: 'sticky',
-            top: '-20px',  // Overlap the header
-            zIndex: 15,
-            marginBottom: '20px'
+            bottom: 0,
+            zIndex: 20,
+            maxHeight: '50vh'
           }}>
-            <ChatBot currentTab={tab} isEmbedded={true} />
+            <ChatBot currentTab={tab} isEmbedded={true} showThemeToggle={false} />
           </div>
-        )}
-        
-        <main className="container" style={{paddingTop:'12px', gridColumn: isDesktop ? '2' : '1'}}>
-          {q ? (
-            // When searching, show all sections with results
-            <>
-              {hasResults.books && <Section title="Books"><BooksView q={q} /></Section>}
-              {hasResults.kqed && <Section title="KQED — Eastern Wisdom & Modern Life (1959–60)"><KQEDView q={q} /></Section>}
-              {hasResults.essentials && <Section title="The Essential Lectures (1972) — filmed"><EssentialsView q={q} /></Section>}
-              {hasResults.works && <Section title="The Works — Complete Audio Series Index"><WorksView q={q} /></Section>}
-              {!hasResults.books && !hasResults.kqed && !hasResults.essentials && !hasResults.works && 
-                <div style={{padding:'48px', textAlign:'center', color:'#6b7280'}}>No results found for "{q}"</div>
-              }
-            </>
-          ) : (
-            // When not searching, show only the selected tab
-            <>
-              {tab === 'books' && <Section title="Books"><BooksView q={q} /></Section>}
-              {tab === 'kqed' && <Section title="KQED — Eastern Wisdom & Modern Life (1959–60)"><KQEDView q={q} /></Section>}
-              {tab === 'essentials' && <Section title="The Essential Lectures (1972) — filmed"><EssentialsView q={q} /></Section>}
-              {tab === 'works' && <Section title="The Works — Complete Audio Series Index"><WorksView q={q} /></Section>}
-            </>
-          )}
-          <div className="footer">
-            <div style={{marginBottom: '16px'}}>
-              Notes compiled from official listings and public archives. Always cross‑check against the <a href="https://alanwatts.org" target="_blank" rel="noopener noreferrer">Alan Watts Organization</a> for canonical metadata.
-            </div>
-            <div style={{fontSize: '12px', lineHeight: '1.5', color: '#6b7280'}}>
-              <div style={{marginBottom: '8px'}}>
-                <strong>Disclaimer:</strong> All information provided here was obtained from open sources and is provided "as is". 
-                The AI chat assistant is an automated tool that generates responses based on philosophical concepts - like using any tool, 
-                use it with caution and don't necessarily believe everything it says.
-              </div>
-              <div>
-                Created by <a href="https://sum1solutions.com" target="_blank" rel="noopener noreferrer">Sum1 Solutions</a>
-              </div>
-            </div>
-          </div>
-        </main>
-      </div>
+        </div>
+      )}
     </div>
   )
 }
