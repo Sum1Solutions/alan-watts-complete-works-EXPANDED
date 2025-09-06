@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { getContentRecommendations } from './data.enhanced.js';
 
-export default function ChatBot({ currentTab = 'books', isEmbedded = false, showThemeToggle = false }) {
+export default function ChatBot({ currentTab = 'books', isEmbedded = false, showThemeToggle = false, onContentRequest = null }) {
   const [isOpen, setIsOpen] = useState(true);
   const [messages, setMessages] = useState([
-    { role: 'assistant', content: "Hello! I'm Sum1namedAlan. I embody [Alan Watts'](https://en.wikipedia.org/wiki/Alan_Watts) (1915-1973) approach to understanding life - his curiosity about how Eastern wisdom could illuminate Western living, his journey from Anglican priest to Zen interpreter, his struggles with authenticity and his insights about the \"cosmic game\" we're all playing.\n\nI can share what's known about how he figured things out, discuss his philosophy, and guide you through his works. When I'm not certain about something, I'll be honest about that rather than guess.\n\nDid you come here through a search, add to an initial response, or did you find me from one of those fascinating inspirational sites that have melodies that seem to be trying to articulate a feeling, perhaps? Anyway, welcome!\n\n\"We are the universe experiencing itself subjectively\" - what would you like to explore about Alan's journey or ideas?" }
+    { role: 'assistant', content: "Hello! I'm Sum1namedAlan. I embody [Alan Watts'](https://en.wikipedia.org/wiki/Alan_Watts) (1915-1973) approach to understanding life - his curiosity about how Eastern wisdom could illuminate Western living, his journey from Anglican priest to Zen interpreter, his struggles with authenticity and his insights about the \"cosmic game\" we're all playing.\n\nI can share what's known about how he figured things out, discuss his philosophy, and guide you through his works. Let's chat!" }
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -178,6 +179,16 @@ export default function ChatBot({ currentTab = 'books', isEmbedded = false, show
           role: 'assistant', 
           content: data.response 
         }]);
+        
+        // Get content recommendations based on user message and AI response
+        const recommendations = getContentRecommendations(userMessage + ' ' + data.response);
+        if (recommendations.length > 0 && onContentRequest) {
+          onContentRequest({
+            type: 'recommendations',
+            content: recommendations,
+            context: 'Based on our conversation, you might find these resources helpful'
+          });
+        }
       } else {
         throw new Error('No response received');
       }

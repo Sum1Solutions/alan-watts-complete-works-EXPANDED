@@ -10,14 +10,14 @@
 }
 
 [data-theme="dark"] { 
-  --bg: #000000; 
-  --fg: #ffffff; 
-  --muted: #a3a3a3; 
-  --border: #404040; 
-  --card: #1a1a1a; 
-  --chat-bg: #000000;
-  --content-bg: #000000;
-  --orange: #f38020; /* Same Cloudflare orange */
+  --bg: #0a0a0a; 
+  --fg: #f5f5f5; 
+  --muted: #c4c4c4; 
+  --border: #525252; 
+  --card: #1f1f1f; 
+  --chat-bg: #0a0a0a;
+  --content-bg: #0a0a0a;
+  --orange: #ff8c42; /* Brighter orange for dark mode */
 }
 * { box-sizing:border-box; }
 body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; background:var(--bg); color:var(--fg); }
@@ -37,15 +37,15 @@ h1 { margin:0; font-size:22px; }
 .card:hover { box-shadow: 0 6px 16px rgba(0,0,0,0.06); }
 .chip { font-size:12px; color:var(--muted); }
 .title { margin:4px 0 0 0; font-size:18px; font-weight:600; line-height:1.25; }
-.subtitle { font-size:14px; color:#374151; margin-top:4px; }
-.notes { font-size:14px; color:#374151; margin-top:8px; }
+.subtitle { font-size:14px; color:var(--muted); margin-top:4px; }
+.notes { font-size:14px; color:var(--fg); margin-top:8px; opacity:0.85; }
 .linkbtn { display:inline-flex; gap:6px; padding:8px 12px; border:1px solid var(--border); border-radius:12px; margin-top:10px; text-decoration:none; color:inherit; }
-.linkbtn:hover { background:#f3f4f6; }
+.linkbtn:hover { background:var(--border); }
 .section { margin-top:12px; }
 .section h2 { margin:0 0 8px 0; font-size:20px; }
-.group { border:1px solid var(--border); border-radius:14px; background:#fff; overflow:hidden; margin-bottom:12px; }
-.group h3 { margin:0; padding:12px 16px; background:#f9fafb; border-bottom:1px solid var(--border); font-size:16px; }
+.group { border:1px solid var(--border); border-radius:14px; background:var(--card); overflow:hidden; margin-bottom:12px; }
+.group h3 { margin:0; padding:12px 16px; background:var(--bg); border-bottom:1px solid var(--border); font-size:16px; }
 .group .body { padding:12px 16px; }
 .list { display:grid; gap:8px; padding:0; list-style:none; }
-.list li { padding:8px 10px; border:1px solid var(--border); border-radius:10px; background:#fff; }
+.list li { padding:8px 10px; border:1px solid var(--border); border-radius:10px; background:var(--card); }
 .footer { margin-top:24px; font-size:12px; color:var(--muted); }

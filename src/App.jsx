@@ -57,6 +57,42 @@ const EssentialsView = () => (
   </div>
 )
 
+// AI Recommendations Display Component
+const RecommendationsView = ({ recommendations }) => {
+  if (!recommendations) return null;
+  
+  return (
+    <div style={{
+      background: 'var(--orange)',
+      color: 'white',
+      padding: '16px',
+      borderRadius: '12px',
+      marginBottom: '24px',
+      boxShadow: '0 4px 12px rgba(243, 128, 32, 0.3)'
+    }}>
+      <h3 style={{margin: '0 0 8px 0', fontSize: '16px', fontWeight: '600'}}>
+        💡 Sum1namedAlan suggests:
+      </h3>
+      <p style={{margin: '0 0 12px 0', fontSize: '14px', opacity: 0.9}}>
+        {recommendations.context}
+      </p>
+      <div style={{display: 'flex', flexWrap: 'wrap', gap: '8px'}}>
+        {recommendations.content.map((item, i) => (
+          <span key={i} style={{
+            background: 'rgba(255,255,255,0.2)',
+            padding: '4px 8px',
+            borderRadius: '6px',
+            fontSize: '12px',
+            fontWeight: '500'
+          }}>
+            {item}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 const WorksView = () => {
   // Flatten all recordings into cards
   const allRecordings = [];
@@ -162,6 +198,8 @@ export default function App() {
   const [isDesktop, setIsDesktop] = useState(typeof window !== 'undefined' && window.innerWidth >= 1024)
   const [chatWidth, setChatWidth] = useState(450)
   const [isDragging, setIsDragging] = useState(false)
+  const [contentFilter, setContentFilter] = useState(null)
+  const [aiRecommendations, setAiRecommendations] = useState(null)
 
   useEffect(() => {
     const handleResize = () => {
@@ -198,6 +236,17 @@ export default function App() {
       document.removeEventListener('mouseup', handleMouseUp)
     }
   }, [isDragging])
+
+  // Handle content requests from chatbot
+  const handleContentRequest = (request) => {
+    if (request.type === 'recommendations') {
+      setAiRecommendations({
+        content: request.content,
+        context: request.context,
+        timestamp: Date.now()
+      });
+    }
+  }
 
   const tabs = [
     { id: 'books', label: 'Books' },
@@ -237,16 +286,26 @@ export default function App() {
                 color: 'var(--orange)',
                 fontWeight: '600'
               }}>
-                An AI embodying Alan Watts' approach to life and philosophy
+                Alan Watts AI + Reference Archive
               </h1>
             </div>
             
-            {/* Orange divider line */}
+            {/* Orange divider line - aligned with chat header */}
             <div style={{
               height: '3px',
               background: 'var(--orange)',
               marginBottom: '16px'
             }} />
+            
+            {/* TL;DR positioned below divider */}
+            <div style={{textAlign: 'center', marginBottom: '16px'}}>
+              <a href="https://app.screencast.com/UkiROLrdG2fyI" target="_blank" rel="noopener noreferrer" style={{
+                color: 'var(--orange)',
+                textDecoration: 'underline',
+                fontSize: '16px',
+                fontWeight: '500'
+              }}>TL;DR (Too long; didn't read)</a>
+            </div>
             
             <div className="tabs">
               <button className={"tab"+(tab==='books'?" active":"")} onClick={()=>setTab('books')}>Books</button>
@@ -259,6 +318,8 @@ export default function App() {
           
           {/* Content Area */}
           <div style={{padding: '24px 32px'}}>
+            {/* AI Recommendations */}
+            <RecommendationsView recommendations={aiRecommendations} />
             {tab === 'all' && <AllView />}
             {tab === 'books' && <Section title="Books"><BooksView /></Section>}
             {tab === 'kqed' && <Section title="KQED — Eastern Wisdom & Modern Life (1959–60)"><KQEDView /></Section>}
@@ -283,8 +344,6 @@ export default function App() {
               </div>
               <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
                 <span><strong>Disclaimer:</strong> Information provided "as is". AI responses are automated - use with caution.</span>
-                <span>•</span>
-                <span><a href="https://app.screencast.com/UkiROLrdG2fyI" target="_blank" rel="noopener noreferrer" style={{color: 'var(--orange)'}}>TL;DR (Too long; didn't read)</a></span>
                 <span>•</span>
                 <span>Created by <a href="https://sum1solutions.com" target="_blank" rel="noopener noreferrer" style={{color: 'var(--orange)'}}>Sum1 Solutions</a></span>
               </div>
@@ -318,7 +377,12 @@ export default function App() {
             overflow: 'hidden',
             flexShrink: 0
           }}>
-            <ChatBot currentTab={tab} isEmbedded={true} showThemeToggle={true} />
+            <ChatBot 
+              currentTab={tab} 
+              isEmbedded={true} 
+              showThemeToggle={true} 
+              onContentRequest={handleContentRequest}
+            />
           </div>
         </>
       )}
@@ -340,7 +404,7 @@ export default function App() {
                     fontSize: '24px',
                     fontWeight: '600'
                   }}>
-                    An AI embodying Alan Watts' approach to life and philosophy
+                    Alan Watts AI + Reference Archive
                   </h1>
                   <div className="tabs">
                     <button className={"tab"+(tab==='books'?" active":"")} onClick={()=>setTab('books')}>Books</button>
@@ -358,6 +422,8 @@ export default function App() {
           </header>
           
           <main className="container" style={{flex: 1, paddingTop:'12px'}}>
+            {/* AI Recommendations */}
+            <RecommendationsView recommendations={aiRecommendations} />
             {tab === 'all' && <AllView />}
             {tab === 'books' && <Section title="Books"><BooksView /></Section>}
             {tab === 'kqed' && <Section title="KQED — Eastern Wisdom & Modern Life (1959–60)"><KQEDView /></Section>}
@@ -372,7 +438,12 @@ export default function App() {
             zIndex: 20,
             maxHeight: '50vh'
           }}>
-            <ChatBot currentTab={tab} isEmbedded={true} showThemeToggle={false} />
+            <ChatBot 
+              currentTab={tab} 
+              isEmbedded={true} 
+              showThemeToggle={false} 
+              onContentRequest={handleContentRequest}
+            />
           </div>
         </div>
       )}
