@@ -63,27 +63,45 @@ const RecommendationsView = ({ recommendations }) => {
   
   return (
     <div style={{
-      background: 'var(--orange)',
+      background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-soft) 100%)',
       color: 'white',
-      padding: '16px',
-      borderRadius: '12px',
+      padding: '20px',
+      borderRadius: '16px',
       marginBottom: '24px',
-      boxShadow: '0 4px 12px rgba(243, 128, 32, 0.3)'
+      boxShadow: '0 8px 32px rgba(212, 116, 42, 0.25)',
+      border: '1px solid rgba(255, 255, 255, 0.1)',
+      backdropFilter: 'blur(8px)'
     }}>
-      <h3 style={{margin: '0 0 8px 0', fontSize: '16px', fontWeight: '600'}}>
-        💡 Sum1namedAlan suggests:
+      <h3 style={{
+        margin: '0 0 10px 0', 
+        fontSize: '16px', 
+        fontWeight: '600',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px'
+      }}>
+        <span style={{fontSize: '18px'}}>🌊</span>
+        Sum1namedAlan suggests:
       </h3>
-      <p style={{margin: '0 0 12px 0', fontSize: '14px', opacity: 0.9}}>
+      <p style={{
+        margin: '0 0 16px 0', 
+        fontSize: '14px', 
+        opacity: 0.95,
+        lineHeight: '1.4'
+      }}>
         {recommendations.context}
       </p>
-      <div style={{display: 'flex', flexWrap: 'wrap', gap: '8px'}}>
+      <div style={{display: 'flex', flexWrap: 'wrap', gap: '10px'}}>
         {recommendations.content.map((item, i) => (
           <span key={i} style={{
-            background: 'rgba(255,255,255,0.2)',
-            padding: '4px 8px',
-            borderRadius: '6px',
+            background: 'rgba(255,255,255,0.15)',
+            padding: '6px 12px',
+            borderRadius: '20px',
             fontSize: '12px',
-            fontWeight: '500'
+            fontWeight: '500',
+            border: '1px solid rgba(255,255,255,0.1)',
+            backdropFilter: 'blur(4px)',
+            transition: 'all 0.2s ease'
           }}>
             {item}
           </span>

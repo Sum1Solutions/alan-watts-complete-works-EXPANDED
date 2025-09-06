@@ -1,34 +1,41 @@
 # Sum1namedAlan - Embodying Alan Watts' Approach to Life
 
-An AI personality that embodies Alan Watts' (1915-1973) approach to philosophy and living, combined with a comprehensive reference library of his complete works.
+An advanced AI personality that deeply embodies Alan Watts' (1915-1973) philosophical approach and biographical journey, integrated with a comprehensive reference library of his complete works and enhanced with intelligent content recommendations.
 
-## Features
+## ✨ Latest Features (v2.1)
 
-### Interactive AI Personality
-- **Sum1namedAlan** - An AI that discusses Watts' philosophy while being transparent about uncertainty
-- Biographical knowledge of Watts' journey from Anglican priest to Zen interpreter
-- Context-aware conversation based on which section you're browsing
-- Anti-hallucination safeguards - admits when uncertain rather than fabricating
-- **Always-visible chat interface** - Prominently displayed for immediate engagement
-- **Mobile-optimized** - Fully responsive design with accessible chat on all devices
+### Enhanced AI Personality with Biographical Depth
+- **Deep Biographical Integration** - Comprehensive life timeline from Anglican childhood through Sausalito houseboat years
+- **Personal Context Understanding** - How specific life experiences shaped philosophical insights
+- **Conversation Memory** - Tracks themes across messages and builds contextual continuity  
+- **Enhanced Anti-Hallucination** - Sophisticated uncertainty acknowledgment with biographical grounding
+- **Warm Earth Tone Design** - Color palette inspired by Watts' aesthetic preferences for Eastern art and natural forms
+
+### Smart Content Integration System
+- **Intelligent Recommendations** - AI automatically suggests relevant works based on conversation topics
+- **Interactive Display** - Beautiful gradient-enhanced suggestion panels appear in content area
+- **Theme Detection** - Analyzes discussions about anxiety, identity, death, relationships, etc.
+- **Real-time Updates** - Recommendations refresh based on ongoing dialogue themes
+- **Cross-Reference System** - Links between biographical periods and philosophical works
+
+### Advanced Features
+- **Enhanced Metadata** - Detailed content structure with themes, concepts, practical applications
+- **Conversation Themes** - Automatic detection and building of personal context
+- **Visual Improvements** - Glassmorphism effects, smooth animations, hover transitions
+- **Comprehensive Testing** - Unit, E2E, and API test frameworks for reliability
 
 ### Complete Reference Library
-- **Books** — All major published works with publication years and archive links
-- **KQED Series** — "Eastern Wisdom & Modern Life" radio talks (1959–60)
-- **Essential Lectures** — The filmed lecture series from 1972
-- **The Works** — Complete audio archive index with original source links
+- **Books** — All major published works (22 titles) with publication years and archive links
+- **KQED Series** — "Eastern Wisdom & Modern Life" radio talks (18 episodes, 1959–60)
+- **Essential Lectures** — The filmed lecture series from 1972 (video content)
+- **The Works** — Complete audio archive index (373+ recordings) with original source links
 
-### Smart Context System
-- AI tracks which section you're viewing (Books/KQED/Essential Lectures/The Works)
-- Lightweight context updates when you switch sections
-- Optimized prompt system - only rebuilds context when you actually chat
-- Maintains conversation history while being aware of your browsing
-
-### Enhanced User Experience
-- **Overlapping design** - Chat elegantly overlaps header with sophisticated shadows
-- **Glassmorphism effects** - Modern backdrop blur and gradient borders
-- **Responsive layout** - Desktop: 2-column with sticky chat, Mobile: stacked with accessible chat
-- **Visual depth** - Multi-layered shadows and lighting effects
+### Design Philosophy
+**Inspired by Alan Watts' Aesthetic Sensibilities:**
+- **Warm Earth Tones** - Terracotta and amber colors inspired by Eastern ceramics and Sausalito sunsets
+- **Clarity & Spaciousness** - Design reflecting his love for Chinese paintings that "seemed to float"
+- **Natural Transitions** - Smooth animations echoing the flow of water and organic forms
+- **Transparency Effects** - Glassmorphism elements reflecting his appreciation for transparency in art
 
 ## Getting Started
 
@@ -36,6 +43,14 @@ An AI personality that embodies Alan Watts' (1915-1973) approach to philosophy a
 ```bash
 npm install
 npm run dev
+```
+
+**Testing:**
+```bash
+npm test           # Run all tests
+npm run test:unit  # Unit tests (Vitest + React Testing Library)
+npm run test:e2e   # E2E tests (Playwright)
+npm run test:api   # API functionality tests
 ```
 
 **Deployment to Cloudflare Pages:**
@@ -110,6 +125,29 @@ Data compiled from:
 - Wikipedia
 
 **Important:** All information is from open sources and provided "as is". Sum1namedAlan is an AI tool - like any automated system, use with caution and verify important information against primary sources.
+
+## 🚀 Future Roadmap
+
+### Phase 1: Enhanced Prompt Engineering ✅ (Completed)
+- Deep biographical integration with life timeline
+- Conversation memory and theme detection  
+- Smart content recommendations
+- Enhanced visual design and user experience
+
+### Phase 2: RAG Implementation (Planned - 10 weeks)
+**Full documentation: [`docs/cloudflare-rag-implementation-plan.md`](./docs/cloudflare-rag-implementation-plan.md)**
+
+- **Infrastructure Setup** (Week 1-2) - Cloudflare Vectorize, AutoRAG, D1 database
+- **Content Processing** (Week 3-4) - Copyright-compliant vectorization of works  
+- **Advanced RAG** (Week 5-6) - Agentic retrieval with conversation memory
+- **Interactive Features** (Week 7-8) - Dynamic content display control
+- **Testing & Optimization** (Week 9-10) - Quality assurance and performance tuning
+
+### Phase 3: Advanced Features (Future)
+- Voice synthesis with Watts-like speech patterns
+- Multi-modal content integration (images, audio)
+- Personalized learning paths based on user interests
+- Community contributions and curated content expansion
 
 ## Acknowledgments
 
